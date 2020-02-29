@@ -1,9 +1,3 @@
-/* *****************************************************************************
- *  Name:
- *  Date:
- *  Description:
- **************************************************************************** */
-
 import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item> {
@@ -55,6 +49,10 @@ public class Deque<Item> implements Iterable<Item> {
                 this.first.item = item;
                 this.first.next = newNext;
                 this.numberOfItems++;
+
+                if (newNext.next == null) {
+                    this.last = newNext;
+                }
             }
         }
     }
@@ -65,21 +63,74 @@ public class Deque<Item> implements Iterable<Item> {
             throw new IllegalArgumentException("The item cannot be null");
         }
         else {
-            if (this.last == null) {
+            if (this.first == null) {
+                this.first = new Node() {
+                };
+                this.first.item = item;
+                this.numberOfItems++;
+            }
+            else {
+                if (this.last == null) {
+                    this.last = new Node() {
+                    };
+                    this.last.item = item;
+                    this.last.previous = this.first;
+                    this.numberOfItems++;
+                }
+                else {
+                    Node newPrevious = this.last;
+                    this.last = new Node() {
+                    };
+                    newPrevious.next = this.last;
+                    this.last.item = item;
+                    this.last.previous = newPrevious;
+                }
             }
         }
     }
 
     // remove and return the item from the front
-    public Item removeFirst()
+    public Item removeFirst() {
+        Node nodeToPop = this.first;
+        this.first = nodeToPop.next;
+        this.first.previous = null;
+        return nodeToPop.item;
+    }
 
     // remove and return the item from the back
-    public Item removeLast()
+    public Item removeLast() {
+        Node nodeToPop = this.last;
+        this.last = nodeToPop.previous;
+        this.last.next = null;
+        return nodeToPop.item;
+    }
 
     // return an iterator over items in order from front to back
-    public Iterator<Item> iterator()
+    public Iterator<Item> iterator() {
+        return new Iterator<Item>() {
+            public boolean hasNext() {
+                return false;
+            }
+
+            public Item next() {
+                return null;
+            }
+        };
+    }
 
     // unit testing (required)
-    public static void main(String[] args)
+    public static void main(String[] args) {
+        Deque<Item> deque1 = new Deque<Item>();
+
+        Node node1 = new Node();
+        Node node2 = new Node();
+        Node node3 = new Node();
+
+        deque1.addFirst(node1.item);
+        deque1.addFirst(node2.item);
+        deque1.addLast(node3.item);
+
+        int noOfItems = deque1.numberOfItems;
+    }
 
 }
