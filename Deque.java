@@ -1,12 +1,12 @@
 import java.util.Iterator;
 
-public class Deque<Item> implements Iterable<Item> {
+public class Deque<T> implements Iterable<T> {
 
     private Node first, last;
     private int numberOfItems;
 
     private class Node {
-        Item item;
+        T item;
         Node next;
         Node previous;
     }
@@ -34,31 +34,33 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     // add the item to the front
-    public void addFirst(Item item) {
+    public void addFirst(T item) {
         if (item == null) {
             throw new IllegalArgumentException("The item cannot be null");
         }
         else {
             if (this.first == null) {
+                Node newNode = new Node();
+                this.first = newNode;
                 this.first.item = item;
                 this.numberOfItems++;
             }
             else {
-                Node newNext = this.first;
-                newNext.previous = this.first;
-                this.first.item = item;
-                this.first.next = newNext;
-                this.numberOfItems++;
-
-                if (newNext.next == null) {
-                    this.last = newNext;
+                if (this.first.next == null) {
+                    this.last = this.first;
                 }
+                Node newNode = new Node();
+                newNode.item = item;
+                newNode.next = this.first;
+                this.first.previous = newNode;
+                this.first = newNode;
+                this.numberOfItems++;
             }
         }
     }
 
     // add the item to the back
-    public void addLast(Item item) {
+    public void addLast(T item) {
         if (item == null) {
             throw new IllegalArgumentException("The item cannot be null");
         }
@@ -75,44 +77,47 @@ public class Deque<Item> implements Iterable<Item> {
                     };
                     this.last.item = item;
                     this.last.previous = this.first;
+                    this.first.next = this.last;
                     this.numberOfItems++;
                 }
                 else {
-                    Node newPrevious = this.last;
-                    this.last = new Node() {
-                    };
-                    newPrevious.next = this.last;
-                    this.last.item = item;
-                    this.last.previous = newPrevious;
+                    Node newNode = new Node();
+                    newNode.item = item;
+                    newNode.previous = this.last;
+                    this.last.next = newNode;
+                    this.last = newNode;
+                    this.numberOfItems++;
                 }
             }
         }
     }
 
     // remove and return the item from the front
-    public Item removeFirst() {
+    public T removeFirst() {
         Node nodeToPop = this.first;
         this.first = nodeToPop.next;
         this.first.previous = null;
+        this.numberOfItems--;
         return nodeToPop.item;
     }
 
     // remove and return the item from the back
-    public Item removeLast() {
+    public T removeLast() {
         Node nodeToPop = this.last;
         this.last = nodeToPop.previous;
         this.last.next = null;
+        this.numberOfItems--;
         return nodeToPop.item;
     }
 
     // return an iterator over items in order from front to back
-    public Iterator<Item> iterator() {
-        return new Iterator<Item>() {
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
             public boolean hasNext() {
                 return false;
             }
 
-            public Item next() {
+            public T next() {
                 return null;
             }
         };
@@ -120,17 +125,21 @@ public class Deque<Item> implements Iterable<Item> {
 
     // unit testing (required)
     public static void main(String[] args) {
-        Deque<Item> deque1 = new Deque<Item>();
+        Deque<String> deque1 = new Deque<String>();
 
-        Node node1 = new Node();
-        Node node2 = new Node();
-        Node node3 = new Node();
-
-        deque1.addFirst(node1.item);
-        deque1.addFirst(node2.item);
-        deque1.addLast(node3.item);
+        deque1.addFirst("my");
+        deque1.addLast("name");
+        deque1.addLast("is");
+        deque1.addFirst("Andy");
 
         int noOfItems = deque1.numberOfItems;
+        boolean empty = deque1.isEmpty();
+        deque1.removeFirst();
+        deque1.removeLast();
+
+        Iterator<String> iterator1 = deque1.iterator();
+        iterator1.hasNext();
+        System.out.println(deque1.first.item);
     }
 
 }
